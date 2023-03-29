@@ -1,0 +1,9 @@
+---
+- name: Template for butane
+  ansible.builtin.template:
+    src: node.bu.j2
+    dest: "{{ _dest }}/{{ ocp_ignition_role }}.bu"
+    mode: 0644
+
+- name: Template for butane
+  ansible.builtin.shell: /usr/local/bin/butane {{ _dest }}/{{ ocp_ignition_role }}.bu -o {{ _dest }}/openshift/{{ ocp_ignition_role }}.yaml

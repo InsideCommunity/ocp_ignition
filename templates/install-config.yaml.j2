@@ -1,0 +1,26 @@
+apiVersion: v1
+baseDomain: {{ ocp_ignition_base_domain }}
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 0
+controlPlane:
+  hyperthreading: Enabled
+  name: controler
+  replicas: 3
+metadata:
+  name: {{ ocp_ignition_cluster_name }}
+{% if ocp_ignition_config_proxy %}
+proxy: {{ ocp_ignition_config_proxy }}
+{% endif %}
+{% if ocp_ignition_config_trust_bundle %}
+additionalTrustBundle: {{ ocp_ignition_config_trust_bundle }}
+{% endif %}
+networking:
+  clusterNetwork: {{ ocp_ignition_config_cluster_networks }}
+  networkType: OVNKubernetes
+  serviceNetwork: {{ ocp_ignition_config_service_networks }}
+platform:
+  none: {}
+pullSecret: {{ ocp_ignition_config_pull_secret | quote }}
+sshKey: {{ ocp_ignition_config_ssh_key | quote }}

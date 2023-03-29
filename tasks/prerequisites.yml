@@ -1,0 +1,55 @@
+---
+- name: Set usefull vars
+  ansible.builtin.set_fact:
+    _dest: "{{ ocp_ignition_private_dest }}/{{ ansible_date_time.date }}"
+
+- name: Download openshift-installer
+  github_release:
+    user: okd-project
+    repo: okd
+    action: latest_release
+  register: latest_release
+
+- name: Check binary openshift-install
+  ansible.builtin.stat:
+    path: /usr/local/bin/openshift-install
+  register: binary_install
+
+- name: Get binary
+  ansible.builtin.unarchive:
+    src: "https://github.com/okd-project/okd/releases/download/{{ latest_release.tag }}/openshift-install-linux-{{ latest_release.tag }}.tar.gz"
+    dest: /usr/local/bin
+    remote_src: true
+  when: not binary_install.stat.exists
+
+- name: Check binary butane
+  ansible.builtin.stat:
+    path: /usr/local/bin/butane
+  register: binary_butane
+
+- name: Get binary
+  ansible.builtin.get_url:
+    url: https://mirror.openshift.com/pub/openshift-v4/clients/butane/latest/butane
+    dest: /usr/local/bin
+    mode: 0755
+  when: not binary_butane.stat.exists
+
+- name: Ensure folders exists
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    recurse: true
+    mode: 0777
+  loop:
+    - "{{ ocp_ignition_dest }}"
+    - "{{ _dest }}"
+
+- name: Ensure private dest is empty
+  ansible.builtin.find:
+    path: "{{ _dest }}"
+  register: private_dest
+
+- name: Fail if not empty
+  ansible.builtin.fail:
+    msg: 'The {{ ocp_ignition_private_dest }}/{{ ansible_date_time.date }} folder is not empty.'
+  when: private_dest.matched > 0

@@ -1,0 +1,12 @@
+---
+
+- name: Ensure prerequisites
+  run_once: true
+  ansible.builtin.include_tasks: prerequisites.yml
+
+- name: Create and customize manifests
+  ansible.builtin.include_tasks: ignition.yml
+
+- name: Finalize ignition files management
+  run_once: true
+  ansible.builtin.include_tasks: finalize.yml

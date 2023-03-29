@@ -1,0 +1,21 @@
+---
+- name: Find files
+  ansible.builtin.find:
+    paths: "{{ _dest }}"
+    patterns: "*.ign"
+  register: files_to_change
+
+- name: Change permission
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: "{{ ocp_ignition_dest_owner | default(omit) }}"
+    group: "{{ ocp_ignition_dest_group | default(omit) }}"
+    mode: 0755
+  with_items: "{{ files_to_change.files }}"
+
+- name: Copy ignitions files to webserver
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ ocp_ignition_dest }}"
+    remote_src: true
+  with_items: "{{ files_to_change.files }}"
