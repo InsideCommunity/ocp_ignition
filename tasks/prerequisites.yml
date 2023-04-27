@@ -3,8 +3,22 @@
   ansible.builtin.set_fact:
     _dest: "{{ ocp_ignition_private_dest }}/{{ ansible_date_time.date }}"
 
+- name: Ensure pip is available
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - python3-setuptools 
+    - python3-pip
+    - unzip
+    - tar
+  when: "ansible_distribution == 'Amazon'"
+
+- name: Ensure github3.py is installed
+  ansible.builtin.pip:
+    name: github3.py
+
 - name: Download openshift-installer
-  github_release:
+  community.general.github_release:
     user: okd-project
     repo: okd
     action: latest_release
@@ -49,7 +63,18 @@
     path: "{{ _dest }}"
   register: private_dest
 
-- name: Fail if not empty
+- name: Print find
+  ansible.builtin.debug:
+    msg: '{{ private_dest }}'
+
+- name: "Fail if not empty and ocp_ignition_safe_mode is {{ ocp_ignition_safe_mode }}"
   ansible.builtin.fail:
     msg: 'The {{ ocp_ignition_private_dest }}/{{ ansible_date_time.date }} folder is not empty.'
-  when: private_dest.matched > 0
+  when: private_dest.matched > 0 and ocp_ignition_safe_mode
+
+- name: "Empty {{ _dest }} folder as ocp_ignition_safe_mode is set to {{ ocp_ignition_safe_mode }}"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ private_dest.files }}"
+  when: private_dest.matched > 0 and not ocp_ignition_safe_mode

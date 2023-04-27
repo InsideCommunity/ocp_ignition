@@ -1,0 +1,20 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+  - name: Find files
+    ansible.builtin.find:
+      paths: /var/www/html/example/ignitions
+      patterns: "*.ign"
+    register: results
+
+  - name: Debug find
+    ansible.builtin.debug:
+      msg: "{{ results }}"
+      verbosity: 3
+
+  - name: Verify results
+    ansible.builtin.fail:
+      msg: "FAILURE - error in ignition files count - should have 1 by host bootstrap, controler and worker"
+    when: results.matched != 3

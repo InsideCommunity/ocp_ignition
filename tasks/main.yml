@@ -1,12 +1,16 @@
 ---
-
 - name: Ensure prerequisites
-  run_once: true
   ansible.builtin.include_tasks: prerequisites.yml
+  tags:
+    - molecule-idempotence-notest
 
 - name: Create and customize manifests
   ansible.builtin.include_tasks: ignition.yml
+  tags:
+    - molecule-idempotence-notest
 
 - name: Finalize ignition files management
   run_once: true
   ansible.builtin.include_tasks: finalize.yml
+  tags:
+    - molecule-idempotence-notest

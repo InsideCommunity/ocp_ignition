@@ -1,0 +1,74 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: docker
+
+platforms:
+  # more information about dynamic images https://www.jeffgeerling.com/blog/2018/testing-your-ansible-roles-molecule
+  # image=quay.io/podman/stable && scenario=docker_driver && molecule test -s $scenario
+  # On "${name:-${image:-debian}", the last brace does not miss, it works like that...
+  # The env var should be used when the image variable refers to a full registry path like registry.access.redhat.com/ubi8/ubi
+  - name: insidegroup_ocp_iso_customize_bootstrap_${name:-${image:-fedora}-${tag:-latest}-${scenario:-default}
+    image: ${image:-fedora}:${tag:-latest}
+    privileged: true
+    tty: true
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    capabilities:
+      - SYS_ADMIN
+      - SYS_TIME
+      - LINUX_IMMUTABLE
+    groups:
+      - bootstrap
+  - name: insidegroup_ocp_iso_customize_controler_${name:-${image:-fedora}-${tag:-latest}-${scenario:-default}
+    image: ${image:-fedora}:${tag:-latest}
+    privileged: true
+    tty: true
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    capabilities:
+      - SYS_ADMIN
+      - SYS_TIME
+      - LINUX_IMMUTABLE
+    groups:
+      - controlers
+  - name: insidegroup_ocp_iso_customize_worker_${name:-${image:-fedora}-${tag:-latest}-${scenario:-default}
+    image: ${image:-fedora}:${tag:-latest}
+    privileged: true
+    tty: true
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    capabilities:
+      - SYS_ADMIN
+      - SYS_TIME
+      - LINUX_IMMUTABLE
+    groups:
+      - workers
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_FORCE_COLOR: "true"
+  options:
+    v: true
+
+verifier:
+  name: ansible
+  options:
+    verbose: true
+    s: true
+
+lint: |
+  set -e
+  yamllint .
+  ansible-lint

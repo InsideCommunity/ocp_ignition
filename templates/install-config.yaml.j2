@@ -22,5 +22,5 @@ networking:
   serviceNetwork: {{ ocp_ignition_config_service_networks }}
 platform:
   none: {}
-pullSecret: {{ ocp_ignition_config_pull_secret | quote }}
-sshKey: {{ ocp_ignition_config_ssh_key | quote }}
+pullSecret: '{{ ocp_ignition_config_pull_secret | to_json(ensure_ascii=False) }}'
+sshKey: {{ ocp_ignition_config_ssh_key }}
