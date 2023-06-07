@@ -126,24 +126,16 @@ Role default variables from `defaults/{{role_defaults_file['filename']}}`.
     {% endif %}
   {% endif %}
 
-Focus on **ocp_iso_customize_kargs** if you needed to customize networking
+{% for varfiles in role_defaults_files %}
+  {% if varfiles['content']['ocp_ignition_butane_storage'] %} 
+Focus on **ocp_ignition_butane_storage** if you needed to customize networking
 ```yaml
-# Should be defined in host_vars both group_vars and host_vars
-ocp_iso_customize_kargs:
-  client_ip: 10.0.10.10
-  gw_ip: 10.0.10.254
-  netmask: 255.255.255.0
-  interface: bond0
-  autoconf: none
-  bond:
-    name: bond0
-    ifaces: ens18,ens19
-    bond_opts: mode=active-backup,fail_over_mac=follow
-  disabled_interfaces:
-    - eno1
-    - eno2
+# Should be defined in host_vars or both group_vars and host_vars
+ocp_ignition_butane_storage:
+{{ varfiles['content']['ocp_ignition_butane_storage']}}
 ```
-
+  {% endif %}
+{% endfor %}
 ### Context variables
 
 {% if role_vars_files != [] %}

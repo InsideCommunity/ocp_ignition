@@ -48,7 +48,7 @@ ocp_ignition_butane_storage:
   files:
     - path: /etc/ignition_example_file
       contents:
-        inline: Ansible Generated file from ocp_ignition role provided by InsideGroup (www.insidegroup.fr)
+        inline: Ansible Generated file from ocp_ignition role provided by InsideGroup(www.insidegroup.fr)
       mode: 0644
 ocp_ignition_butane_passwd: {}
 #  users:

@@ -12,7 +12,10 @@ Create ignition files to install Red Hat Openshift or OKD
 
 **Platforms Supported**:
 
-None.
+| Platform | Versions |
+|----------|----------|
+| Ubuntu | focal, jammy |
+| Fedora | all |
 
 ## ⚠️ Requirements
 
@@ -63,8 +66,7 @@ Basic usage is:
         ocp_ignition_butane_storage:
           files:
             - contents:
-                inline: Ansible Generated file from ocp_ignition role provided by InsideGroup
-                  (www.insidegroup.fr)
+                inline: Ansible Generated file from ocp_ignition role provided by InsideGroup(www.insidegroup.fr)
               mode: 420
               path: /etc/ignition_example_file
           filesystems:
@@ -90,6 +92,7 @@ Basic usage is:
         ocp_ignition_ocp_version: 4.12.0
         ocp_ignition_private_dest: /home/user/ignitions
         ocp_ignition_role: controler
+        ocp_ignition_safe_mode: true
         
 ```
 
@@ -111,13 +114,14 @@ Role default variables from `defaults/main.yml`.
 | Variable Name | Value |
 |---------------|-------|
 | ocp_ignition_ocp_version | 4.12.0 |
+| ocp_ignition_safe_mode | True |
 | ocp_ignition_private_dest | /home/user/ignitions |
 | ocp_ignition_dest | /var/www/html/example/ignitions |
 | ocp_ignition_role | controler |
 | ocp_ignition_cluster_name | ocp4 |
 | ocp_ignition_base_domain | example.com |
 | ocp_ignition_butane_disabled | False |
-| ocp_ignition_butane_storage | files:<br>- contents:<br>    inline: Ansible Generated file from ocp_ignition role provided by InsideGroup<br>      (www.insidegroup.fr)<br>  mode: 420<br>  path: /etc/ignition_example_file<br>filesystems:<br>- device: /dev/mapper/root<br>  format: xfs<br>  wipe_filesystem: true<br>luks:<br>- device: /dev/disk/by-partlabel/root<br>  key_file:<br>    inline: AZERTyuiop<br>  name: luks-root<br> |
+| ocp_ignition_butane_storage | [] |
 | ocp_ignition_butane_passwd | {}<br> |
 | ocp_ignition_butane_boot_device | {}<br> |
 | ocp_ignition_config_proxy | {}<br> |
@@ -127,24 +131,27 @@ Role default variables from `defaults/main.yml`.
 | ocp_ignition_config_pull_secret |  |
 | ocp_ignition_config_ssh_key |  |
 
-Focus on **ocp_iso_customize_kargs** if you needed to customize networking
+ 
+Focus on **ocp_ignition_butane_storage** if you needed to customize networking
 ```yaml
-# Should be defined in host_vars both group_vars and host_vars
-ocp_iso_customize_kargs:
-  client_ip: 10.0.10.10
-  gw_ip: 10.0.10.254
-  netmask: 255.255.255.0
-  interface: bond0
-  autoconf: none
-  bond:
-    name: bond0
-    ifaces: ens18,ens19
-    bond_opts: mode=active-backup,fail_over_mac=follow
-  disabled_interfaces:
-    - eno1
-    - eno2
-```
+# Should be defined in host_vars or both group_vars and host_vars
+ocp_ignition_butane_storage:
+files:
+- contents:
+    inline: Ansible Generated file from ocp_ignition role provided by InsideGroup(www.insidegroup.fr)
+  mode: 420
+  path: /etc/ignition_example_file
+filesystems:
+- device: /dev/mapper/root
+  format: xfs
+  wipe_filesystem: true
+luks:
+- device: /dev/disk/by-partlabel/root
+  key_file:
+    inline: AZERTyuiop
+  name: luks-root
 
+```
 ### Context variables
 
 None.
