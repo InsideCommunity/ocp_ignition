@@ -6,4 +6,6 @@
     mode: 0644
 
 - name: Template for butane
-  ansible.builtin.shell: /usr/local/bin/butane {{ _dest }}/{{ ocp_ignition_role }}.bu -o {{ _dest }}/openshift/{{ ocp_ignition_role }}.yaml
+  ansible.builtin.command: /usr/local/bin/butane {{ _dest }}/{{ ocp_ignition_role }}.bu -o {{ _dest }}/openshift/{{ ocp_ignition_role }}.yaml
+  register: _butane_tpl
+  changed_when: "_butane_tpl.rc != 0 and _butane_tpl.stderr != ''"

@@ -8,7 +8,9 @@
 
 - name: Create manifests
   run_once: true
-  ansible.builtin.shell: "openshift-install create manifests --dir={{ _dest }}"
+  ansible.builtin.command: "openshift-install create manifests --dir={{ _dest }}"
+  register: _manifests_create
+  changed_when: "_manifests_create.rc != 0 and _manifests_create.stderr != ''"
 
 - name: Customize manifests
   run_once: true
@@ -17,7 +19,9 @@
 
 - name: Create ignitions
   run_once: true
-  ansible.builtin.shell: openshift-install create ignition-configs --dir={{ _dest }}
+  ansible.builtin.command: openshift-install create ignition-configs --dir={{ _dest }}
+  register: _ign_create
+  changed_when: "_ign_create.rc != 0 and _ign_create.stderr != ''"
 
 - name: Template for butane for a node specific ign
   ansible.builtin.template:
@@ -27,5 +31,7 @@
   when: ocp_ignition_host_specific | d(false)
 
 - name: Template for butane for a node specific ign
-  ansible.builtin.shell: /usr/bin/local/butane {{ ocp_ignition_private_dest }}/{{ ansible_host.split('.')[0] }}.bu -o {{ _dest }}/{{ ansible_host.split('.')[0] }}.ign
+  ansible.builtin.command: /usr/bin/local/butane {{ ocp_ignition_private_dest }}/{{ ansible_host.split('.')[0] }}.bu -o {{ _dest }}/{{ ansible_host.split('.')[0] }}.ign
   when: ocp_ignition_host_specific | d(false)
+  register: _butane_tpl
+  changed_when: "_butane_tpl.rc != 0 and _butane_tpl.stderr != ''"

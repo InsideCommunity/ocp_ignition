@@ -1,30 +1,35 @@
 ---
 ocp_ignition_ocp_version: 4.12.0
-
+#####################################
+# The way you manage folders allready exist
+# If false existing folders will be deleted to avoid failure in manifests creation
+# else (default) existing folders will be preserved
+ocp_ignition_safe_mode: true
+#####################################
 # Be aware that all the connection information will be expose in the case you choose to keep the following folder in your web server
 # A dated folder will be created in ocp_ignition_private_dest path
 ocp_ignition_private_dest: /home/user/ignitions
-
+#####################################
 # Folders used be expose ignitions though HTTP/HTTPS
 ocp_ignition_dest: /var/www/html/example/ignitions
-
+#####################################
 # Role of the host on which the play is running
 ocp_ignition_role: controler
-
+#####################################
 ocp_ignition_cluster_name: ocp4
 ocp_ignition_base_domain: example.com
-
+#####################################
 # Set to true to disable manifests cutomization
 #
 ocp_ignition_butane_disabled: false
-
+#####################################
 # Set it to true and specify ocp_ignition_butane_* vars needed in hostvars to overwrite global ignition role customization
 # For example if some of your nodes doesn't have the same NICs or disks
 #
 # ocp_ignition_host_specific: true
-
+#####################################
 # Butane config see https://coreos.github.io/butane/examples/ or https://coreos.github.io/butane/config-openshift-v4_12/
-
+#####################################
 # Could be used when ocp_ignition_host_specific is set
 #ocp_ignition_butane_ignition:
 #  config:
@@ -53,26 +58,25 @@ ocp_ignition_butane_passwd: {}
 ocp_ignition_butane_boot_device: {}
 #  luks:
 #    tpm2: true
-
+#####################################
 # Customize Openshift cluster through install-config.yaml
 ocp_ignition_config_proxy: {}
 #  httpProxy: http://<username>:<pswd>@<ip>:<port> 
 #  httpsProxy: https://<username>:<pswd>@<ip>:<port> 
 #  noProxy: example.com
-
+#####################################
 # Add custom CA trust
 ocp_ignition_config_trust_bundle: ""
-
+#####################################
 # Private subnet for pods
 ocp_ignition_config_cluster_networks:
   - cidr: 10.128.0.0/14
     hostPrefix: 23
-
+#####################################
 # Subnet for services
 ocp_ignition_config_service_networks:
   - 172.30.0.0/16
-
+#####################################
 # Secret used to access openshift registry
 ocp_ignition_config_pull_secret: ''
 ocp_ignition_config_ssh_key: ''
-

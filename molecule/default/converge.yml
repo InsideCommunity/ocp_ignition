@@ -1,0 +1,28 @@
+---
+- name: Converge bootstrap
+  hosts: bootstrap
+  roles:
+    - role: insidegroup.ocp_ignition
+  vars:
+    ocp_ignition_role: bootstrap
+    ocp_ignition_safe_mode: false
+    ocp_ignition_config_pull_secret: "{{ lookup('ansible.builtin.env', 'RH_PULL_SECRET') }}"
+    ocp_ignition_config_ssh_key: "{{ lookup('ansible.builtin.env', 'EXAMPLE_SSH_RSA_PUB') }}"
+- name: Converge controler
+  hosts: controlers
+  roles:
+    - role: insidegroup.ocp_ignition
+  vars:
+    ocp_ignition_role: controlers
+    ocp_ignition_safe_mode: false
+    ocp_ignition_config_pull_secret: "{{ lookup('ansible.builtin.env', 'RH_PULL_SECRET') }}"
+    ocp_ignition_config_ssh_key: "{{ lookup('ansible.builtin.env', 'EXAMPLE_SSH_RSA_PUB') }}"
+- name: Converge worker
+  hosts: workers
+  roles:
+    - role: insidegroup.ocp_ignition
+  vars:
+    ocp_ignition_role: workers
+    ocp_ignition_safe_mode: false
+    ocp_ignition_config_pull_secret: "{{ lookup('ansible.builtin.env', 'RH_PULL_SECRET') }}"
+    ocp_ignition_config_ssh_key: "{{ lookup('ansible.builtin.env', 'EXAMPLE_SSH_RSA_PUB') }}"
